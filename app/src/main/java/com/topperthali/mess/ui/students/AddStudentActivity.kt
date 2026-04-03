@@ -1,7 +1,11 @@
 package com.topperthali.mess.ui.students
 
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
@@ -9,6 +13,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
 import com.topperthali.mess.data.entities.StudentEntity
+import com.topperthali.mess.utils.QrGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,7 +25,6 @@ class AddStudentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_student)
 
-        // Link our XML UI elements to Kotlin
         val etStudentName = findViewById<TextInputEditText>(R.id.etStudentName)
         val etStudentPhone = findViewById<TextInputEditText>(R.id.etStudentPhone)
         val btnSaveStudent = findViewById<MaterialButton>(R.id.btnSaveStudent)
@@ -29,34 +33,43 @@ class AddStudentActivity : AppCompatActivity() {
             val name = etStudentName.text.toString().trim()
             val phone = etStudentPhone.text.toString().trim()
 
-            // Basic validation
             if (name.isEmpty() || phone.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Generate a unique, random string for this student's QR code
             val uniqueQrData = UUID.randomUUID().toString()
+            val newStudent = StudentEntity(name = name, phone = phone, qrData = uniqueQrData, creditsRemaining = 30)
 
-            // Create the new student object
-            val newStudent = StudentEntity(
-                name = name,
-                phone = phone,
-                qrData = uniqueQrData,
-                creditsRemaining = 30 // Start with a fresh 30-day cycle
-            )
-
-            // Save to the Room Database in the background
             lifecycleScope.launch(Dispatchers.IO) {
                 val db = MessDatabase.getDatabase(this@AddStudentActivity)
                 db.messDao().insertStudent(newStudent)
 
-                // Switch back to the Main thread to show a Toast and close the screen
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@AddStudentActivity, "Student Saved! QR Generated.", Toast.LENGTH_SHORT).show()
-                    finish() // Closes this screen and goes back
+                    showQrDialog(name, uniqueQrData)
                 }
             }
         }
+    }
+
+    private fun showQrDialog(name: String, qrData: String) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
+        val tvName = dialogView.findViewById<TextView>(R.id.tvStudentNameDialog)
+        val ivQr = dialogView.findViewById<ImageView>(R.id.ivQrCodeDialog)
+        val btnDone = dialogView.findViewById<Button>(R.id.btnDoneDialog)
+
+        tvName.text = name
+        ivQr.setImageBitmap(QrGenerator.generateQrCode(qrData))
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        btnDone.setOnClickListener {
+            dialog.dismiss()
+            finish() // Go back to dashboard
+        }
+        dialog.show()
     }
 }
