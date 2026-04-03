@@ -1,5 +1,6 @@
 package com.topperthali.mess
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +8,7 @@ import com.google.android.material.card.MaterialCardView
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
+import com.topperthali.mess.ui.students.AddStudentActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,8 +40,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         cardManageStudents.setOnClickListener {
-            // TODO: We will launch the Student List Activity here later
-            Toast.makeText(this, "Opening Students List...", Toast.LENGTH_SHORT).show()
+            // Launch the Add Student Activity
+            val intent = Intent(this, AddStudentActivity::class.java)
+            startActivity(intent)
         }
     }
 
