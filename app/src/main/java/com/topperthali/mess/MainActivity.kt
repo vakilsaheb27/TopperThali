@@ -11,7 +11,7 @@ import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import com.topperthali.mess.data.MessDatabase
 import com.topperthali.mess.data.entities.AttendanceEntity
-import com.topperthali.mess.ui.students.AddStudentActivity
+import com.topperthali.mess.ui.students.StudentListActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,7 +33,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialCardView>(R.id.cardManageStudents).setOnClickListener {
-            startActivity(Intent(this, AddStudentActivity::class.java))
+            // UPDATED: This now opens the Student List instead of the Add Student screen
+            startActivity(Intent(this, StudentListActivity::class.java))
         }
     }
 
