@@ -3,10 +3,12 @@ package com.topperthali.mess.ui.students
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.topperthali.mess.R
 import com.topperthali.mess.data.entities.StudentEntity
+import com.topperthali.mess.utils.WhatsAppHelper
 
 class StudentAdapter(private val studentList: List<StudentEntity>) : 
     RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
@@ -15,6 +17,7 @@ class StudentAdapter(private val studentList: List<StudentEntity>) :
         val tvName: TextView = itemView.findViewById(R.id.tvItemName)
         val tvPhone: TextView = itemView.findViewById(R.id.tvItemPhone)
         val tvDays: TextView = itemView.findViewById(R.id.tvItemDays)
+        val btnWhatsApp: ImageView = itemView.findViewById(R.id.btnWhatsApp)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
@@ -29,11 +32,21 @@ class StudentAdapter(private val studentList: List<StudentEntity>) :
         holder.tvPhone.text = student.phone
         holder.tvDays.text = student.creditsRemaining.toString()
 
-        // Make the text red if days are running low (3 or fewer)
+        // Turn text red if 3 or fewer days remaining
         if (student.creditsRemaining <= 3) {
             holder.tvDays.setTextColor(android.graphics.Color.RED)
         } else {
             holder.tvDays.setTextColor(android.graphics.Color.parseColor("#0D47A1"))
+        }
+
+        // Handle WhatsApp Click
+        holder.btnWhatsApp.setOnClickListener {
+            WhatsAppHelper.sendReminder(
+                context = holder.itemView.context,
+                phone = student.phone,
+                studentName = student.name,
+                daysLeft = student.creditsRemaining
+            )
         }
     }
 
