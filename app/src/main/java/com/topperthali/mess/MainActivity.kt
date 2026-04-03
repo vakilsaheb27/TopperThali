@@ -4,8 +4,25 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.card.MaterialCardView
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanIntentResult
+import com.journeyapps.barcodescanner.ScanOptions
 
 class MainActivity : AppCompatActivity() {
+
+    // 1. Initialize the QR Scanner Launcher
+    private val barcodeLauncher = registerForActivityResult(
+        ScanContract()
+    ) { result: ScanIntentResult ->
+        if (result.contents == null) {
+            Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_SHORT).show()
+        } else {
+            val scannedQrData = result.contents
+            // TODO: In the next phase, we will query the Room DB with this data
+            // to mark attendance and deduct 1 meal credit!
+            Toast.makeText(this, "Success! Scanned: $scannedQrData", Toast.LENGTH_LONG).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,13 +34,25 @@ class MainActivity : AppCompatActivity() {
 
         // Set Click Listeners
         cardScanQr.setOnClickListener {
-            // TODO: We will launch the ZXing Scanner Activity here next!
-            Toast.makeText(this, "Opening Scanner...", Toast.LENGTH_SHORT).show()
+            launchScanner()
         }
 
         cardManageStudents.setOnClickListener {
             // TODO: We will launch the Student List Activity here later
             Toast.makeText(this, "Opening Students List...", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    // 2. Configure and launch the scanner
+    private fun launchScanner() {
+        val options = ScanOptions()
+        options.setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+        options.setPrompt("Scan Student QR Code\nVolume keys to toggle flash")
+        options.setCameraId(0) // 0 = Rear camera
+        options.setBeepEnabled(true) // Beep on successful scan
+        options.setOrientationLocked(false) // Allow screen rotation
+        
+        // Launch the camera
+        barcodeLauncher.launch(options)
     }
 }
