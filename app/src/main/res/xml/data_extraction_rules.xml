@@ -1,0 +1,10 @@
+<data-extraction>
+    <backup rules="android:backupAgent">
+        <full-backup-content>
+            <exclude>
+                <item>*.tmp</item>
+                <item>*.log</item>
+            </exclude>
+        </full-backup-content>
+    </backup>
+</data-extraction>
