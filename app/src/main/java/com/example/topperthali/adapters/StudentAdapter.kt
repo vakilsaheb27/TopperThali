@@ -4,8 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.topperthali.model.Student
-import com.example.topperthali.R
+
+// Updated to use your app's actual namespace
+import com.topperthali.mess.R
+// Assuming your Student data class is in a 'model' folder. 
+// (If it is in ui.students, change this to: import com.topperthali.mess.ui.students.Student)
+import com.topperthali.mess.model.Student 
 
 class StudentAdapter(private val studentList: List<Student>) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
 
