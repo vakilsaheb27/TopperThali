@@ -53,5 +53,3 @@ class StudentAdapter(private val studentList: List<StudentEntity>) :
     override fun getItemCount(): Int {
         return studentList.size
     }
-    }
-    
