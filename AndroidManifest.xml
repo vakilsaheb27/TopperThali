@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.topperthali.mess">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Camera Permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature
         android:name="android.hardware.camera"
@@ -11,14 +9,11 @@
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
 
-    <!-- Vibrate Permission -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!-- Network Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Storage Permissions (for Android 13+) -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -30,7 +25,6 @@
         android:theme="@style/Theme.TopperThaliMess"
         android:dataExtractionRules="@xml/data_extraction_rules">
 
-        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -42,7 +36,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Student Management Activities -->
         <activity
             android:name=".ui.students.AddStudentActivity"
             android:exported="false"
