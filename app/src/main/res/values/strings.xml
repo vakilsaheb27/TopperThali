@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Topper Thali</string>
+    <string name="student_name_label">Student Name</string>
+    <string name="phone_number_label">Phone Number</string>
+    <string name="days_left_label">Days Left</string>
+    <string name="add_student">Add Student</string>
+    <string name="edit_student">Edit Student</string>
+    <string name="save_student">Save Student</string>
+    <string name="delete_student">Delete Student</string>
+    <string name="renew_subscription">Renew Subscription (30 Days)</string>
+    <string name="holiday_status">Holiday Mode</string>
+    <string name="scan_qr">Scan QR Code</string>
+    <string name="attendance_history">Attendance History</string>
+</resources>
