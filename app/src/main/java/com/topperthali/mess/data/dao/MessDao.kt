@@ -18,6 +18,9 @@ interface MessDao {
     @Query("SELECT * FROM students_table WHERE qrData = :qrCode LIMIT 1")
     suspend fun getStudentByQr(qrCode: String): StudentEntity?
 
+    @Query("SELECT * FROM students_table WHERE studentId = :studentId LIMIT 1")
+    suspend fun getStudentById(studentId: Int): StudentEntity?
+
     @Update
     suspend fun updateStudent(student: StudentEntity)
 
@@ -31,4 +34,7 @@ interface MessDao {
     // --- Payment Queries ---
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayment(payment: PaymentEntity)
+
+    @Delete
+    suspend fun deleteStudent(student: StudentEntity)
 }

@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "com.topperthali.mess.app-mergeReleaseResources-3:/layout/activity_add_student.xml",
+        "source": "com.topperthali.mess.app-main-5:/layout/activity_add_student.xml"
+    },
+    {
+        "merged": "com.topperthali.mess.app-mergeReleaseResources-3:/layout/activity_main.xml",
+        "source": "com.topperthali.mess.app-main-5:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.topperthali.mess.app-mergeReleaseResources-3:/layout/dialog_qr_code.xml",
+        "source": "com.topperthali.mess.app-main-5:/layout/dialog_qr_code.xml"
+    },
+    {
+        "merged": "com.topperthali.mess.app-mergeReleaseResources-3:/layout/item_student_card.xml",
+        "source": "com.topperthali.mess.app-main-5:/layout/item_student_card.xml"
+    },
+    {
+        "merged": "com.topperthali.mess.app-mergeReleaseResources-3:/layout/activity_student_detail.xml",
+        "source": "com.topperthali.mess.app-main-5:/layout/activity_student_detail.xml"
+    },
+    {
+        "merged": "com.topperthali.mess.app-mergeReleaseResources-3:/layout/activity_student_list.xml",
+        "source": "com.topperthali.mess.app-main-5:/layout/activity_student_list.xml"
+    }
+]

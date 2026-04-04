@@ -1,5 +1,6 @@
 package com.topperthali.mess.ui.students
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,6 +48,13 @@ class StudentAdapter(private val studentList: List<StudentEntity>) :
                 studentName = student.name,
                 daysLeft = student.creditsRemaining
             )
+        }
+
+        // Open Detail Screen on Card Click
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context, StudentDetailActivity::class.java)
+            intent.putExtra("STUDENT_ID", student.studentId)
+            holder.itemView.context.startActivity(intent)
         }
     }
 
