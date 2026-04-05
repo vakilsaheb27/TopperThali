@@ -31,6 +31,7 @@ class StudentAdapter(private val studentList: List<StudentEntity>) :
         holder.tvName.text = student.name
         holder.tvPhone.text = student.phone
         holder.tvDays.text = student.creditsRemaining.toString()
+        holder.btnWhatsApp.contentDescription = "Send WhatsApp reminder to ${student.name}"
 
         // Turn text red if 3 or fewer days remaining
         if (student.creditsRemaining <= 3) {
