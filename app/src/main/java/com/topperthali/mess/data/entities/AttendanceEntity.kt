@@ -1,13 +1,32 @@
 package com.topperthali.mess.data.entities
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "attendance_table")
+@Entity(
+    tableName = "attendance",
+    foreignKeys = [
+        ForeignKey(
+            entity = StudentEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["studentId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["studentId", "date", "mealType"], unique = true)]
+)
 data class AttendanceEntity(
+
     @PrimaryKey(autoGenerate = true)
-    val attendanceId: Int = 0,
+    val id: Int = 0,
+
     val studentId: Int,
-    val scanTimestamp: Long = System.currentTimeMillis(),
-    val mealType: String // e.g., "LUNCH" or "DINNER"
+
+    val date: String, // yyyy-MM-dd
+
+    val mealType: String, // LUNCH / DINNER
+
+    val status: String // PRESENT / ABSENT
 )
