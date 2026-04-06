@@ -1,50 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.topperthali.mess">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="true" />
-    <uses-feature
-        android:name="android.hardware.camera.autofocus"
-        android:required="false" />
-
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
     <uses-permission android:name="android.permission.VIBRATE" />
-
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:label="@string/app_name"
+        android:icon="@android:drawable/sym_def_app_icon"
+        android:label="Topper Thali"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TopperThaliMess"
-        android:dataExtractionRules="@xml/data_extraction_rules">
-
+        android:theme="@style/Theme.TopperThaliMess">
+        
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.TopperThaliMess"
-            android:screenOrientation="portrait">
+            android:name=".ui.StudentDashboardActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ui.students.AddStudentActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.students.StudentListActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".ui.students.AddStudentActivity" />
+        <activity android:name=".ui.students.StudentListActivity" />
 
     </application>
-
 </manifest>
