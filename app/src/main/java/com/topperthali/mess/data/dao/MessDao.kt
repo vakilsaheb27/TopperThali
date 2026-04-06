@@ -1,34 +1,34 @@
 package com.topperthali.mess.data.dao
 
 import androidx.room.*
-import com.topperthali.mess.data.entities.AttendanceEntity
-import com.topperthali.mess.data.entities.PaymentEntity
 import com.topperthali.mess.data.entities.StudentEntity
 
 @Dao
 interface MessDao {
 
-    // --- Student Queries ---
+    // ---------------- STUDENT OPERATIONS ---------------- //
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStudent(student: StudentEntity)
-
-    @Query("SELECT * FROM students_table ORDER BY name ASC")
-    suspend fun getAllStudents(): List<StudentEntity>
-
-    @Query("SELECT * FROM students_table WHERE qrData = :qrCode LIMIT 1")
-    suspend fun getStudentByQr(qrCode: String): StudentEntity?
 
     @Update
     suspend fun updateStudent(student: StudentEntity)
 
-    // --- Attendance Queries ---
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAttendance(attendance: AttendanceEntity)
+    @Delete
+    suspend fun deleteStudent(student: StudentEntity)
 
-    @Query("SELECT * FROM attendance_table WHERE studentId = :studentId ORDER BY scanTimestamp DESC")
-    suspend fun getAttendanceForStudent(studentId: Int): List<AttendanceEntity>
+    @Query("SELECT * FROM students ORDER BY id DESC")
+    suspend fun getAllStudents(): List<StudentEntity>
 
-    // --- Payment Queries ---
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPayment(payment: PaymentEntity)
+    @Query("SELECT * FROM students WHERE id = :studentId")
+    suspend fun getStudentById(studentId: Int): StudentEntity?
+
+    @Query("SELECT * FROM students WHERE status = 'ACTIVE'")
+    suspend fun getActiveStudents(): List<StudentEntity>
+
+    @Query("SELECT * FROM students WHERE status = 'EXPIRED'")
+    suspend fun getExpiredStudents(): List<StudentEntity>
+
+    @Query("SELECT * FROM students WHERE name LIKE '%' || :query || '%' OR mobile LIKE '%' || :query || '%'")
+    suspend fun searchStudents(query: String): List<StudentEntity>
 }
