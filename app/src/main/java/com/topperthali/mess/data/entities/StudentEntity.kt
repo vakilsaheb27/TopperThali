@@ -23,5 +23,5 @@ data class StudentEntity(
 
     val status: String, // ACTIVE / EXPIRED
 
-    val qrCode: String
+    val qrCode: String = ""
 )
