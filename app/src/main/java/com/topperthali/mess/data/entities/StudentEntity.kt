@@ -11,30 +11,23 @@ data class StudentEntity(
 
     val name: String,
 
-    val mobile: String,
+    // OLD FIELD (used in UI)
+    val phone: String,
 
-    val planType: String,
+    // NEW FIELD (same value)
+    val mobile: String = phone,
 
-    val startDate: String,
+    // OLD FIELD
+    val qrData: String = "",
 
-    val endDate: String,
+    // OLD FIELD
+    val creditsRemaining: Int = 0,
 
-    val remainingDays: Int,
-
-    val status: String,
-
-    val qrCode: String
-) {
-    // ✅ Secondary constructor for old code compatibility
-    constructor(name: String, mobile: String) : this(
-        id = 0,
-        name = name,
-        mobile = mobile,
-        planType = "LUNCH",
-        startDate = "",
-        endDate = "",
-        remainingDays = 0,
-        status = "ACTIVE",
-        qrCode = ""
-    )
-}
+    // NEW FIELDS (for future)
+    val planType: String = "LUNCH",
+    val startDate: String = "",
+    val endDate: String = "",
+    val remainingDays: Int = 0,
+    val status: String = "ACTIVE",
+    val qrCode: String = ""
+)
