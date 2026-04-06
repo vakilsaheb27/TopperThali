@@ -9,19 +9,19 @@ data class StudentEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    val name: String,
+    val name: String = "",
 
-    val mobile: String,
+    val mobile: String = "",
 
-    val planType: String, // LUNCH / DINNER / BOTH
+    val planType: String = "LUNCH",
 
-    val startDate: String,
+    val startDate: String = "",
 
-    val endDate: String,
+    val endDate: String = "",
 
-    val remainingDays: Int,
+    val remainingDays: Int = 0,
 
-    val status: String, // ACTIVE / EXPIRED
+    val status: String = "ACTIVE",
 
     val qrCode: String = ""
 )
