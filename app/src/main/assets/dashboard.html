@@ -1,0 +1,15 @@
+<div id="qrcode" class="w-[200px] h-[200px] flex items-center justify-center"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+    // Logic to set the QR Code from Android Data
+    function setStudentQR(qrData) {
+        document.getElementById("qrcode").innerHTML = ""; // Clear old one
+        new QRCode(document.getElementById("qrcode"), {
+            text: qrData,
+            width: 200,
+            height: 200
+        });
+    }
+</script>
