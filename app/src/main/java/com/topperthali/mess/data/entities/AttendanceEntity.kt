@@ -13,16 +13,7 @@ data class AttendanceEntity(
 
     val date: String,
 
-    val mealType: String,
+    val mealType: String, // LUNCH / DINNER
 
-    val status: String
-) {
-    // Optional helper constructor
-    constructor(studentId: Int, date: String) : this(
-        id = 0,
-        studentId = studentId,
-        date = date,
-        mealType = "LUNCH",
-        status = "PRESENT"
-    )
-}
+    val status: String // PRESENT / ABSENT
+)
