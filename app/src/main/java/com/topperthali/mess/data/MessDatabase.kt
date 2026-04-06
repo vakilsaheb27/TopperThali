@@ -5,15 +5,16 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.topperthali.mess.data.dao.MessDao
-import com.topperthali.mess.data.entities.StudentEntity
-import com.topperthali.mess.data.entities.AttendanceEntity
+import com.topperthali.mess.data.entities.*
 
 @Database(
     entities = [
         StudentEntity::class,
-        AttendanceEntity::class
+        SubscriptionEntity::class,
+        AttendanceEntity::class,
+        PaymentEntity::class
     ],
-    version = 2,
+    version = 1,
     exportSchema = false
 )
 abstract class MessDatabase : RoomDatabase() {
@@ -30,9 +31,7 @@ abstract class MessDatabase : RoomDatabase() {
                     context.applicationContext,
                     MessDatabase::class.java,
                     "mess_database"
-                )
-                    .fallbackToDestructiveMigration() // Clears old DB if schema changes
-                    .build()
+                ).build()
 
                 INSTANCE = instance
                 instance
