@@ -39,6 +39,9 @@ class StudentAdapter(private val studentList: List<StudentEntity>) :
             holder.tvDays.setTextColor(android.graphics.Color.parseColor("#0D47A1"))
         }
 
+        // Accessibility: Dynamic label for screen readers
+        holder.btnWhatsApp.contentDescription = "Send WhatsApp reminder to ${student.name}"
+
         // Handle WhatsApp Click
         holder.btnWhatsApp.setOnClickListener {
             WhatsAppHelper.sendReminder(
