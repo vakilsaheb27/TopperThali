@@ -8,9 +8,10 @@
     <application
         android:allowBackup="true"
         android:label="TopperThali"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
 
-        <!-- Main Activity -->
+        <!-- Main Launcher Activity -->
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -18,7 +19,7 @@
             </intent-filter>
         </activity>
 
-        <!-- NEW Add Student Screen -->
+        <!-- New Add Student Screen -->
         <activity android:name=".ui.students.AddStudentNewActivity"/>
 
     </application>
