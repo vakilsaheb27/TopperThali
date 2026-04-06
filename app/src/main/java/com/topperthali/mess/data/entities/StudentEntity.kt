@@ -11,23 +11,7 @@ data class StudentEntity(
 
     val name: String,
 
-    // OLD FIELD (used in UI)
-    val phone: String,
+    val mobile: String,
 
-    // NEW FIELD (same value)
-    val mobile: String = phone,
-
-    // OLD FIELD
-    val qrData: String = "",
-
-    // OLD FIELD
-    val creditsRemaining: Int = 0,
-
-    // NEW FIELDS (for future)
-    val planType: String = "LUNCH",
-    val startDate: String = "",
-    val endDate: String = "",
-    val remainingDays: Int = 0,
-    val status: String = "ACTIVE",
-    val qrCode: String = ""
+    val qrCode: String
 )
