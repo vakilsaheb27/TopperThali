@@ -32,6 +32,9 @@ class StudentAdapter(private val studentList: List<StudentEntity>) :
         holder.tvPhone.text = student.phone
         holder.tvDays.text = student.creditsRemaining.toString()
 
+        // Set dynamic accessibility label for WhatsApp button
+        holder.btnWhatsApp.contentDescription = "Send WhatsApp reminder to ${student.name}"
+
         // Turn text red if 3 or fewer days remaining
         if (student.creditsRemaining <= 3) {
             holder.tvDays.setTextColor(android.graphics.Color.RED)
