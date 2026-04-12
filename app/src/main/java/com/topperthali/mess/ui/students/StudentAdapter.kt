@@ -29,7 +29,7 @@ class StudentAdapter(private val studentList: List<StudentEntity>) :
     override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
         val student = studentList[position]
         holder.tvName.text = student.name
-        holder.tvPhone.text = student.phone
+        holder.tvPhone.text = student.mobile
         holder.tvDays.text = student.creditsRemaining.toString()
 
         // Turn text red if 3 or fewer days remaining
@@ -40,17 +40,20 @@ class StudentAdapter(private val studentList: List<StudentEntity>) :
         }
 
         // Handle WhatsApp Click
-        holder.btnWhatsApp.setOnClickListener {
-            WhatsAppHelper.sendReminder(
-                context = holder.itemView.context,
-                phone = student.phone,
-                studentName = student.name,
-                daysLeft = student.creditsRemaining
-            )
+        holder.btnWhatsApp.apply {
+            contentDescription = "Send WhatsApp reminder to ${student.name}"
+            setOnClickListener {
+                WhatsAppHelper.sendReminder(
+                    context = holder.itemView.context,
+                    phone = student.mobile,
+                    studentName = student.name,
+                    daysLeft = student.creditsRemaining
+                )
+            }
         }
     }
 
     override fun getItemCount(): Int {
         return studentList.size
     }
-    }
+}
