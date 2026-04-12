@@ -2,14 +2,13 @@ package com.topperthali.mess.ui.students
 
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
 import com.topperthali.mess.data.entities.StudentEntity
@@ -25,9 +24,9 @@ class AddStudentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_student)
 
-        val etStudentName = findViewById<TextInputEditText>(R.id.etStudentName)
-        val etStudentPhone = findViewById<TextInputEditText>(R.id.etStudentPhone)
-        val btnSaveStudent = findViewById<MaterialButton>(R.id.btnSaveStudent)
+        val etStudentName = findViewById<EditText>(R.id.etName)
+        val etStudentPhone = findViewById<EditText>(R.id.etMobile)
+        val btnSaveStudent = findViewById<Button>(R.id.btnAdd)
 
         btnSaveStudent.setOnClickListener {
             val name = etStudentName.text.toString().trim()
@@ -38,15 +37,15 @@ class AddStudentActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val uniqueQrData = UUID.randomUUID().toString()
-            val newStudent = StudentEntity(name = name, phone = phone, qrData = uniqueQrData, creditsRemaining = 30)
+            val qrCode = UUID.randomUUID().toString()
+            val newStudent = StudentEntity(name = name, mobile = phone, qrCode = qrCode, creditsRemaining = 30)
 
             lifecycleScope.launch(Dispatchers.IO) {
                 val db = MessDatabase.getDatabase(this@AddStudentActivity)
                 db.messDao().insertStudent(newStudent)
 
                 withContext(Dispatchers.Main) {
-                    showQrDialog(name, uniqueQrData)
+                    showQrDialog(name, qrCode)
                 }
             }
         }

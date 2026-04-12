@@ -14,7 +14,7 @@ import com.topperthali.mess.data.entities.*
         AttendanceEntity::class,
         PaymentEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class MessDatabase : RoomDatabase() {
@@ -31,7 +31,9 @@ abstract class MessDatabase : RoomDatabase() {
                     context.applicationContext,
                     MessDatabase::class.java,
                     "mess_database"
-                ).build()
+                )
+                .fallbackToDestructiveMigration()
+                .build()
 
                 INSTANCE = instance
                 instance

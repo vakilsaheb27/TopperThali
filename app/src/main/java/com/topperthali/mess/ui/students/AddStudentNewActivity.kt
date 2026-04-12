@@ -44,7 +44,8 @@ class AddStudentNewActivity : AppCompatActivity() {
         val student = StudentEntity(
             name = name,
             mobile = mobile,
-            qrCode = qrCode
+            qrCode = qrCode,
+            creditsRemaining = 30
         )
 
         val db = MessDatabase.getDatabase(this)

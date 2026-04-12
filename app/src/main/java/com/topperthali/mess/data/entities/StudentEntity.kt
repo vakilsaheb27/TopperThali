@@ -13,5 +13,7 @@ data class StudentEntity(
 
     val mobile: String,
 
-    val qrCode: String
+    val qrCode: String,
+
+    val creditsRemaining: Int = 30
 )
