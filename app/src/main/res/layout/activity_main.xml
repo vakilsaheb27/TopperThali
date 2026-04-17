@@ -18,7 +18,7 @@
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#0D47A1"
+            android:background="@color/blue_primary"
             app:title="Topper Thali"
             app:titleTextColor="#FFFFFF" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -30,6 +30,8 @@
         android:layout_margin="24dp"
         android:clickable="true"
         android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:contentDescription="Scan QR code for attendance"
         app:cardBackgroundColor="#E3F2FD"
         app:cardCornerRadius="24dp"
         app:cardElevation="4dp"
@@ -53,8 +55,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Scan Presentie"
-                android:textColor="#0D47A1"
+                android:text="Scan Attendance"
+                android:textColor="@color/blue_primary"
                 android:textSize="22sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -67,6 +69,8 @@
         android:layout_margin="24dp"
         android:clickable="true"
         android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:contentDescription="Manage student directory"
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="20dp"
         app:cardElevation="2dp"
