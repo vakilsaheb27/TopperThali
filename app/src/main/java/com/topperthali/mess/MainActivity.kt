@@ -2,23 +2,23 @@ package com.topperthali.mess
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.topperthali.mess.ui.students.AddStudentNewActivity
+import com.google.android.material.card.MaterialCardView
+import com.topperthali.mess.ui.students.StudentListActivity
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        // Simple UI (no XML dependency)
-        val button = Button(this)
-        button.text = "Add Student"
-
-        button.setOnClickListener {
-            startActivity(Intent(this, AddStudentNewActivity::class.java))
+        findViewById<MaterialCardView>(R.id.cardScanQr).setOnClickListener {
+            Toast.makeText(this, "Attendance Scanning coming soon!", Toast.LENGTH_SHORT).show()
         }
 
-        setContentView(button)
+        findViewById<MaterialCardView>(R.id.cardManageStudents).setOnClickListener {
+            startActivity(Intent(this, StudentListActivity::class.java))
+        }
     }
 }

@@ -2,6 +2,8 @@ package com.topperthali.mess.ui.students
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +18,7 @@ import kotlinx.coroutines.withContext
 class StudentListActivity : AppCompatActivity() {
 
     private lateinit var rvStudents: RecyclerView
+    private lateinit var llEmptyState: LinearLayout
     private lateinit var adapter: StudentAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +26,7 @@ class StudentListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_student_list)
 
         rvStudents = findViewById(R.id.rvStudents)
+        llEmptyState = findViewById(R.id.llEmptyState)
         rvStudents.layoutManager = LinearLayoutManager(this)
 
         val fabAddStudent = findViewById<FloatingActionButton>(R.id.fabAddStudent)
@@ -44,8 +48,15 @@ class StudentListActivity : AppCompatActivity() {
             val studentList = db.messDao().getAllStudents()
 
             withContext(Dispatchers.Main) {
-                adapter = StudentAdapter(studentList)
-                rvStudents.adapter = adapter
+                if (studentList.isEmpty()) {
+                    llEmptyState.visibility = View.VISIBLE
+                    rvStudents.visibility = View.GONE
+                } else {
+                    llEmptyState.visibility = View.GONE
+                    rvStudents.visibility = View.VISIBLE
+                    adapter = StudentAdapter(studentList)
+                    rvStudents.adapter = adapter
+                }
             }
         }
     }

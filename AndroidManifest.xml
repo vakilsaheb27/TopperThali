@@ -22,6 +22,14 @@
         <!-- New Add Student Screen -->
         <activity android:name=".ui.students.AddStudentNewActivity"/>
 
+        <activity android:name=".ui.students.StudentListActivity"
+            android:label="Student Directory"
+            android:parentActivityName=".MainActivity"/>
+
+        <activity android:name=".ui.students.AddStudentActivity"
+            android:label="Add Student"
+            android:parentActivityName=".ui.students.StudentListActivity"/>
+
     </application>
 
 </manifest>
