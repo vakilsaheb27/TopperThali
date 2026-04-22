@@ -23,8 +23,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.students.AddStudentActivity" />
-        <activity android:name=".ui.students.StudentListActivity" />
+        <activity
+            android:name=".ui.students.AddStudentActivity"
+            android:parentActivityName=".ui.students.StudentListActivity" />
+        <activity
+            android:name=".ui.students.StudentListActivity"
+            android:parentActivityName=".MainActivity" />
 
     </application>
 
