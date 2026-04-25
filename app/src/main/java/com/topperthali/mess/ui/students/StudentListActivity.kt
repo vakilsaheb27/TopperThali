@@ -2,8 +2,11 @@ package com.topperthali.mess.ui.students
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.appbar.MaterialToolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -16,6 +19,7 @@ import kotlinx.coroutines.withContext
 class StudentListActivity : AppCompatActivity() {
 
     private lateinit var rvStudents: RecyclerView
+    private lateinit var llEmptyState: LinearLayout
     private lateinit var adapter: StudentAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +27,13 @@ class StudentListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_student_list)
 
         rvStudents = findViewById(R.id.rvStudents)
+        llEmptyState = findViewById(R.id.llEmptyState)
         rvStudents.layoutManager = LinearLayoutManager(this)
+
+        val topAppBar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        topAppBar.setNavigationOnClickListener {
+            finish()
+        }
 
         val fabAddStudent = findViewById<FloatingActionButton>(R.id.fabAddStudent)
         fabAddStudent.setOnClickListener {
@@ -44,8 +54,15 @@ class StudentListActivity : AppCompatActivity() {
             val studentList = db.messDao().getAllStudents()
 
             withContext(Dispatchers.Main) {
-                adapter = StudentAdapter(studentList)
-                rvStudents.adapter = adapter
+                if (studentList.isEmpty()) {
+                    rvStudents.visibility = View.GONE
+                    llEmptyState.visibility = View.VISIBLE
+                } else {
+                    rvStudents.visibility = View.VISIBLE
+                    llEmptyState.visibility = View.GONE
+                    adapter = StudentAdapter(studentList)
+                    rvStudents.adapter = adapter
+                }
             }
         }
     }
