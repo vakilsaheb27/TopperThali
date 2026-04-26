@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 class StudentListActivity : AppCompatActivity() {
 
     private lateinit var rvStudents: RecyclerView
-    private lateinit var adapter: StudentAdapter
+    private var adapter: StudentAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +33,6 @@ class StudentListActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // We load the list inside onResume so it updates automatically 
-        // when we return from adding a new student.
         loadStudents()
     }
 
@@ -44,8 +42,13 @@ class StudentListActivity : AppCompatActivity() {
             val studentList = db.messDao().getAllStudents()
 
             withContext(Dispatchers.Main) {
-                adapter = StudentAdapter(studentList)
-                rvStudents.adapter = adapter
+                if (adapter == null) {
+                    adapter = StudentAdapter(studentList)
+                    rvStudents.adapter = adapter
+                } else {
+                    // Update data smoothly instead of recreating the UI
+                    adapter?.updateData(studentList)
+                }
             }
         }
     }
