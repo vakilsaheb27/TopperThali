@@ -11,8 +11,14 @@ interface MessDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStudent(student: StudentEntity)
 
+    @Update
+    suspend fun updateStudent(student: StudentEntity)
+
     @Query("SELECT * FROM students")
     suspend fun getAllStudents(): List<StudentEntity>
+
+    @Query("SELECT * FROM students WHERE qrCode = :qrCode LIMIT 1")
+    suspend fun getStudentByQrCode(qrCode: String): StudentEntity?
 
 
     // ---------------- SUBSCRIPTION ---------------- //
