@@ -46,9 +46,8 @@ class StudentListActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 if (adapter == null) {
-                    // Pass the long-click behavior into the adapter
                     adapter = StudentAdapter(studentList) { student ->
-                        showRenewDialog(student)
+                        showOptionsDialog(student) // Show menu instead of direct renew
                     }
                     rvStudents.adapter = adapter
                 } else {
@@ -58,29 +57,55 @@ class StudentListActivity : AppCompatActivity() {
         }
     }
 
-    private fun showRenewDialog(student: StudentEntity) {
+    private fun showOptionsDialog(student: StudentEntity) {
+        val options = arrayOf("🔄 Renew Subscription (+30 Days)", "❌ Delete Student")
+        AlertDialog.Builder(this)
+            .setTitle("${student.name} Options")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> confirmRenew(student)
+                    1 -> confirmDelete(student)
+                }
+            }
+            .show()
+    }
+
+    private fun confirmRenew(student: StudentEntity) {
         AlertDialog.Builder(this)
             .setTitle("Renew Subscription")
-            .setMessage("Do you want to recharge ${student.name}'s account with 30 more days?")
-            .setPositiveButton("Yes, Renew") { _, _ ->
-                renewStudent(student)
+            .setMessage("Recharge ${student.name}'s account with 30 more days?")
+            .setPositiveButton("Yes") { _, _ ->
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val db = MessDatabase.getDatabase(this@StudentListActivity)
+                    val updatedStudent = student.copy(creditsRemaining = student.creditsRemaining + 30)
+                    db.messDao().updateStudent(updatedStudent)
+                    
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@StudentListActivity, "✅ ${student.name} renewed!", Toast.LENGTH_SHORT).show()
+                        loadStudents()
+                    }
+                }
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
-    private fun renewStudent(student: StudentEntity) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val db = MessDatabase.getDatabase(this@StudentListActivity)
-            
-            // Add 30 to their current credits (just in case they renewed a few days early)
-            val updatedStudent = student.copy(creditsRemaining = student.creditsRemaining + 30)
-            db.messDao().updateStudent(updatedStudent)
-            
-            withContext(Dispatchers.Main) {
-                Toast.makeText(this@StudentListActivity, "✅ ${student.name} renewed successfully!", Toast.LENGTH_SHORT).show()
-                loadStudents() // Refresh the list
+    private fun confirmDelete(student: StudentEntity) {
+        AlertDialog.Builder(this)
+            .setTitle("Delete Student")
+            .setMessage("Are you sure you want to permanently delete ${student.name}? This cannot be undone.")
+            .setPositiveButton("Delete") { _, _ ->
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val db = MessDatabase.getDatabase(this@StudentListActivity)
+                    db.messDao().deleteStudent(student)
+                    
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@StudentListActivity, "🗑️ ${student.name} deleted.", Toast.LENGTH_SHORT).show()
+                        loadStudents()
+                    }
+                }
             }
-        }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 }
