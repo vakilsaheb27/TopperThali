@@ -11,11 +11,8 @@
     @androidx.room.Entity <methods>;
 }
 
-# Keep model classes with annotations
--keep class com.example.app.models.** { *; }
-
-# Keep data classes
--keep class com.example.app.data.** { *; }
+# Keep all models, entities, and DAOs in your specific package
+-keep class com.topperthali.mess.data.** { *; }
 
 # Remove debug logging in release builds
 -assumenosideeffects class android.util.Log {
@@ -23,6 +20,9 @@
     public static *** w(...);
     public static *** i(...);
     public static *** e(...);
+    public static *** v(...);
 }
 
-# Add any other ProGuard rules necessary for your app's release build.
+# Keep Kotlin Coroutines correctly
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
