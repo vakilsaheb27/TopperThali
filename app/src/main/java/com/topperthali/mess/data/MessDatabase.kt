@@ -5,16 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.topperthali.mess.data.dao.MessDao
-import com.topperthali.mess.data.entities.*
+import com.topperthali.mess.data.entities.AttendanceEntity
+import com.topperthali.mess.data.entities.StudentEntity
 
 @Database(
     entities = [
         StudentEntity::class,
-        SubscriptionEntity::class,
-        AttendanceEntity::class,
-        PaymentEntity::class
+        AttendanceEntity::class
     ],
-    version = 2,
+    version = 3, // Incremented version for the clean slate
     exportSchema = false
 )
 abstract class MessDatabase : RoomDatabase() {
