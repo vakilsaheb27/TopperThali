@@ -61,7 +61,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Refresh the stats every time we come back to this screen
         loadDailyStats()
     }
 
@@ -87,35 +86,45 @@ class MainActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 if (student == null) {
-                    Toast.makeText(this@MainActivity, "❌ Invalid QR Code: Student not found", Toast.LENGTH_LONG).show()
-                } else if (student.creditsRemaining <= 0) {
-                    Toast.makeText(this@MainActivity, "⚠️ Access Denied: ${student.name} has 0 days left! Please renew.", Toast.LENGTH_LONG).show()
-                } else {
-                    val updatedStudent = student.copy(creditsRemaining = student.creditsRemaining - 1)
+                    Toast.makeText(this@MainActivity, "❌ Invalid QR Code", Toast.LENGTH_LONG).show()
+                    return@withContext
+                }
+
+                if (student.creditsRemaining <= 0) {
+                    Toast.makeText(this@MainActivity, "⚠️ Access Denied: ${student.name} has 0 days left!", Toast.LENGTH_LONG).show()
+                    return@withContext
+                }
+
+                val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+                val mealType = if (currentHour < 16) "LUNCH" else "DINNER"
+                val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+                // 🚨 Double-Scan Protection Check
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val alreadyScanned = db.messDao().checkAttendanceExists(student.id, todayDate, mealType) > 0
                     
-                    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-                    val mealType = if (currentHour < 16) "LUNCH" else "DINNER"
-                    val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                    withContext(Dispatchers.Main) {
+                        if (alreadyScanned) {
+                            Toast.makeText(this@MainActivity, "🛑 ${student.name} has already eaten $mealType today!", Toast.LENGTH_LONG).show()
+                        } else {
+                            // Safe to deduct credit
+                            val updatedStudent = student.copy(creditsRemaining = student.creditsRemaining - 1)
+                            val attendanceRecord = AttendanceEntity(
+                                studentId = student.id,
+                                date = todayDate,
+                                mealType = mealType,
+                                status = "PRESENT"
+                            )
 
-                    val attendanceRecord = AttendanceEntity(
-                        studentId = student.id,
-                        date = todayDate,
-                        mealType = mealType,
-                        status = "PRESENT"
-                    )
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                db.messDao().updateStudent(updatedStudent)
+                                db.messDao().insertAttendance(attendanceRecord)
 
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        db.messDao().updateStudent(updatedStudent)
-                        db.messDao().insertAttendance(attendanceRecord)
-
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                this@MainActivity, 
-                                "✅ ${student.name} marked for $mealType.\nDays left: ${updatedStudent.creditsRemaining}", 
-                                Toast.LENGTH_LONG
-                            ).show()
-                            // Update the dashboard numbers immediately after a successful scan
-                            loadDailyStats()
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(this@MainActivity, "✅ ${student.name} marked for $mealType.\nDays left: ${updatedStudent.creditsRemaining}", Toast.LENGTH_LONG).show()
+                                    loadDailyStats()
+                                }
+                            }
                         }
                     }
                 }
