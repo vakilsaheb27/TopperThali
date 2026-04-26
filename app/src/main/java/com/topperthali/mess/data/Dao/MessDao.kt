@@ -13,6 +13,9 @@ interface MessDao {
     @Update
     suspend fun updateStudent(student: StudentEntity)
 
+    @Delete
+    suspend fun deleteStudent(student: StudentEntity) // NEW: Ability to delete
+
     @Query("SELECT * FROM students")
     suspend fun getAllStudents(): List<StudentEntity>
 
@@ -30,7 +33,7 @@ interface MessDao {
     @Query("SELECT COUNT(*) FROM attendance WHERE date = :date AND mealType = 'DINNER' AND status = 'PRESENT'")
     suspend fun getTodayDinnerCount(date: String): Int
 
-    // NEW: Prevents double-scanning for the same meal on the same day
+    // Prevents double-scanning for the same meal on the same day
     @Query("SELECT COUNT(*) FROM attendance WHERE studentId = :studentId AND date = :date AND mealType = :mealType")
     suspend fun checkAttendanceExists(studentId: Int, date: String, mealType: String): Int
 }
