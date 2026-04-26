@@ -4,29 +4,30 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.card.MaterialCardView
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
+import com.topperthali.mess.data.MessDatabase
+import com.topperthali.mess.data.entities.AttendanceEntity
 import com.topperthali.mess.ui.students.StudentListActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
-    // 1. Register the barcode scanner launcher
     private val barcodeLauncher = registerForActivityResult(ScanContract()) { result: ScanIntentResult ->
         if (result.contents == null) {
             Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_SHORT).show()
         } else {
-            // 2. We successfully scanned a QR Code!
-            val scannedQrData = result.contents
-            
-            // For now, let's just show the scanned ID on the screen
-            Toast.makeText(this, "Success! Scanned ID: $scannedQrData", Toast.LENGTH_LONG).show()
-            
-            // Next step will be: 
-            // 1. Search database for this qrData
-            // 2. Check if student has remaining credits
-            // 3. Mark attendance & deduct 1 credit
+            // Process the scanned QR Code
+            processAttendance(result.contents)
         }
     }
 
@@ -38,19 +39,63 @@ class MainActivity : AppCompatActivity() {
         val cardManageStudents = findViewById<MaterialCardView>(R.id.cardManageStudents)
 
         cardScanQr.setOnClickListener {
-            // 3. Configure and launch the camera scanner
             val options = ScanOptions()
-            options.setDesiredBarcodeFormats(ScanOptions.QR_CODE) // Only look for QR codes
+            options.setDesiredBarcodeFormats(ScanOptions.QR_CODE)
             options.setPrompt("Scan Student's Topper Thali QR Code")
-            options.setCameraId(0) // Use back camera
-            options.setBeepEnabled(true) // Beep on success
-            options.setOrientationLocked(false) // Allow portrait/landscape
-            
+            options.setCameraId(0)
+            options.setBeepEnabled(true)
+            options.setOrientationLocked(false)
             barcodeLauncher.launch(options)
         }
 
         cardManageStudents.setOnClickListener {
             startActivity(Intent(this, StudentListActivity::class.java))
+        }
+    }
+
+    private fun processAttendance(qrData: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val db = MessDatabase.getDatabase(this@MainActivity)
+            
+            // 1. Find the student by the scanned QR code
+            val student = db.messDao().getStudentByQrCode(qrData)
+
+            withContext(Dispatchers.Main) {
+                if (student == null) {
+                    Toast.makeText(this@MainActivity, "❌ Invalid QR Code: Student not found", Toast.LENGTH_LONG).show()
+                } else if (student.creditsRemaining <= 0) {
+                    Toast.makeText(this@MainActivity, "⚠️ Access Denied: ${student.name} has 0 days left! Please renew.", Toast.LENGTH_LONG).show()
+                } else {
+                    // 2. Deduct 1 credit
+                    val updatedStudent = student.copy(creditsRemaining = student.creditsRemaining - 1)
+                    
+                    // Determine if it's Lunch or Dinner based on current time (Before 4 PM = Lunch)
+                    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+                    val mealType = if (currentHour < 16) "LUNCH" else "DINNER"
+                    val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+                    val attendanceRecord = AttendanceEntity(
+                        studentId = student.id,
+                        date = todayDate,
+                        mealType = mealType,
+                        status = "PRESENT"
+                    )
+
+                    // 3. Save updates back to database
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        db.messDao().updateStudent(updatedStudent)
+                        db.messDao().insertAttendance(attendanceRecord)
+
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@MainActivity, 
+                                "✅ ${student.name} marked for $mealType.\nDays left: ${updatedStudent.creditsRemaining}", 
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            }
         }
     }
 }
