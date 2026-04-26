@@ -1,5 +1,6 @@
 package com.topperthali.mess.ui.students
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,7 @@ import com.topperthali.mess.R
 import com.topperthali.mess.data.entities.StudentEntity
 import com.topperthali.mess.utils.WhatsAppHelper
 
-class StudentAdapter(private val studentList: List<StudentEntity>) : 
+class StudentAdapter(private var studentList: List<StudentEntity>) : 
     RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
 
     class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,26 +35,31 @@ class StudentAdapter(private val studentList: List<StudentEntity>) :
 
         // Turn text red if 3 or fewer days remaining
         if (student.creditsRemaining <= 3) {
-            holder.tvDays.setTextColor(android.graphics.Color.RED)
+            holder.tvDays.setTextColor(Color.RED)
         } else {
-            holder.tvDays.setTextColor(android.graphics.Color.parseColor("#0D47A1"))
+            holder.tvDays.setTextColor(Color.parseColor("#0D47A1"))
         }
 
-        // Handle WhatsApp Click
-        holder.btnWhatsApp.apply {
-            contentDescription = "Send WhatsApp reminder to ${student.name}"
-            setOnClickListener {
-                WhatsAppHelper.sendReminder(
-                    context = holder.itemView.context,
-                    phone = student.mobile,
-                    studentName = student.name,
-                    daysLeft = student.creditsRemaining
-                )
-            }
+        // Dynamic Accessibility Label
+        holder.btnWhatsApp.contentDescription = "Send WhatsApp reminder to ${student.name}"
+        
+        holder.btnWhatsApp.setOnClickListener {
+            WhatsAppHelper.sendReminder(
+                context = holder.itemView.context,
+                phone = student.mobile,
+                studentName = student.name,
+                daysLeft = student.creditsRemaining
+            )
         }
     }
 
     override fun getItemCount(): Int {
         return studentList.size
     }
-}
+
+    // NEW METHOD: Smoothly update the list without recreating the adapter
+    fun updateData(newList: List<StudentEntity>) {
+        this.studentList = newList
+        notifyDataSetChanged()
+    }
+    }
