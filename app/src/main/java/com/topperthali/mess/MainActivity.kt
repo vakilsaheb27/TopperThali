@@ -2,6 +2,7 @@ package com.topperthali.mess
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -22,11 +23,13 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var tvLunchCount: TextView
+    private lateinit var tvDinnerCount: TextView
+
     private val barcodeLauncher = registerForActivityResult(ScanContract()) { result: ScanIntentResult ->
         if (result.contents == null) {
             Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_SHORT).show()
         } else {
-            // Process the scanned QR Code
             processAttendance(result.contents)
         }
     }
@@ -34,6 +37,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        tvLunchCount = findViewById(R.id.tvLunchCount)
+        tvDinnerCount = findViewById(R.id.tvDinnerCount)
 
         val cardScanQr = findViewById<MaterialCardView>(R.id.cardScanQr)
         val cardManageStudents = findViewById<MaterialCardView>(R.id.cardManageStudents)
@@ -53,11 +59,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Refresh the stats every time we come back to this screen
+        loadDailyStats()
+    }
+
+    private fun loadDailyStats() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val db = MessDatabase.getDatabase(this@MainActivity)
+            val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+            val lunchCount = db.messDao().getTodayLunchCount(todayDate)
+            val dinnerCount = db.messDao().getTodayDinnerCount(todayDate)
+
+            withContext(Dispatchers.Main) {
+                tvLunchCount.text = lunchCount.toString()
+                tvDinnerCount.text = dinnerCount.toString()
+            }
+        }
+    }
+
     private fun processAttendance(qrData: String) {
         lifecycleScope.launch(Dispatchers.IO) {
             val db = MessDatabase.getDatabase(this@MainActivity)
-            
-            // 1. Find the student by the scanned QR code
             val student = db.messDao().getStudentByQrCode(qrData)
 
             withContext(Dispatchers.Main) {
@@ -66,10 +91,8 @@ class MainActivity : AppCompatActivity() {
                 } else if (student.creditsRemaining <= 0) {
                     Toast.makeText(this@MainActivity, "⚠️ Access Denied: ${student.name} has 0 days left! Please renew.", Toast.LENGTH_LONG).show()
                 } else {
-                    // 2. Deduct 1 credit
                     val updatedStudent = student.copy(creditsRemaining = student.creditsRemaining - 1)
                     
-                    // Determine if it's Lunch or Dinner based on current time (Before 4 PM = Lunch)
                     val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
                     val mealType = if (currentHour < 16) "LUNCH" else "DINNER"
                     val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
@@ -81,7 +104,6 @@ class MainActivity : AppCompatActivity() {
                         status = "PRESENT"
                     )
 
-                    // 3. Save updates back to database
                     lifecycleScope.launch(Dispatchers.IO) {
                         db.messDao().updateStudent(updatedStudent)
                         db.messDao().insertAttendance(attendanceRecord)
@@ -92,6 +114,8 @@ class MainActivity : AppCompatActivity() {
                                 "✅ ${student.name} marked for $mealType.\nDays left: ${updatedStudent.creditsRemaining}", 
                                 Toast.LENGTH_LONG
                             ).show()
+                            // Update the dashboard numbers immediately after a successful scan
+                            loadDailyStats()
                         }
                     }
                 }
