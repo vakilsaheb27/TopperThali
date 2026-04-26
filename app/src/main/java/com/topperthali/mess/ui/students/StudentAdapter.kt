@@ -11,8 +11,10 @@ import com.topperthali.mess.R
 import com.topperthali.mess.data.entities.StudentEntity
 import com.topperthali.mess.utils.WhatsAppHelper
 
-class StudentAdapter(private var studentList: List<StudentEntity>) : 
-    RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
+class StudentAdapter(
+    private var studentList: List<StudentEntity>,
+    private val onStudentLongClick: (StudentEntity) -> Unit // NEW: Callback for long press
+) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
 
     class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tvItemName)
@@ -33,16 +35,13 @@ class StudentAdapter(private var studentList: List<StudentEntity>) :
         holder.tvPhone.text = student.mobile
         holder.tvDays.text = student.creditsRemaining.toString()
 
-        // Turn text red if 3 or fewer days remaining
         if (student.creditsRemaining <= 3) {
             holder.tvDays.setTextColor(Color.RED)
         } else {
             holder.tvDays.setTextColor(Color.parseColor("#0D47A1"))
         }
 
-        // Dynamic Accessibility Label
         holder.btnWhatsApp.contentDescription = "Send WhatsApp reminder to ${student.name}"
-        
         holder.btnWhatsApp.setOnClickListener {
             WhatsAppHelper.sendReminder(
                 context = holder.itemView.context,
@@ -51,15 +50,20 @@ class StudentAdapter(private var studentList: List<StudentEntity>) :
                 daysLeft = student.creditsRemaining
             )
         }
+
+        // NEW: Detect long press on the whole card
+        holder.itemView.setOnLongClickListener {
+            onStudentLongClick(student)
+            true // Return true to indicate we consumed the long click
+        }
     }
 
     override fun getItemCount(): Int {
         return studentList.size
     }
 
-    // NEW METHOD: Smoothly update the list without recreating the adapter
     fun updateData(newList: List<StudentEntity>) {
         this.studentList = newList
         notifyDataSetChanged()
     }
-    }
+}
