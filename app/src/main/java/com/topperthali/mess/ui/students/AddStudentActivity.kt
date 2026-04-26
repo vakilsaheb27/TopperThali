@@ -1,5 +1,6 @@
 package com.topperthali.mess.ui.students
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -40,25 +41,35 @@ class AddStudentActivity : AppCompatActivity() {
             val qrCode = UUID.randomUUID().toString()
             val newStudent = StudentEntity(name = name, mobile = phone, qrCode = qrCode, creditsRemaining = 30)
 
+            // Launch coroutine on IO thread to prevent UI freezing
             lifecycleScope.launch(Dispatchers.IO) {
                 val db = MessDatabase.getDatabase(this@AddStudentActivity)
                 db.messDao().insertStudent(newStudent)
 
+                // Generate QR code in the background
+                val qrBitmap = QrGenerator.generateQrCode(qrCode)
+
+                // Switch back to Main thread to update the UI
                 withContext(Dispatchers.Main) {
-                    showQrDialog(name, qrCode)
+                    showQrDialog(name, qrBitmap)
                 }
             }
         }
     }
 
-    private fun showQrDialog(name: String, qrData: String) {
+    private fun showQrDialog(name: String, qrBitmap: Bitmap?) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
         val tvName = dialogView.findViewById<TextView>(R.id.tvStudentNameDialog)
         val ivQr = dialogView.findViewById<ImageView>(R.id.ivQrCodeDialog)
         val btnDone = dialogView.findViewById<Button>(R.id.btnDoneDialog)
 
         tvName.text = name
-        ivQr.setImageBitmap(QrGenerator.generateQrCode(qrData))
+        
+        if (qrBitmap != null) {
+            ivQr.setImageBitmap(qrBitmap)
+        } else {
+            Toast.makeText(this, "Failed to generate QR Code", Toast.LENGTH_SHORT).show()
+        }
 
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
