@@ -18,8 +18,37 @@
             android:layout_height="?attr/actionBarSize"
             android:background="#0D47A1"
             app:title="Student Directory"
-            app:titleTextColor="#FFFFFF" />
+            app:titleTextColor="#FFFFFF"
+            app:navigationIcon="@android:drawable/ic_menu_revert"
+            app:navigationContentDescription="Go back" />
     </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/llEmptyState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="👥"
+            android:textSize="48sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="No students added yet"
+            android:textColor="@color/text_secondary"
+            android:textSize="16sp" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvStudents"
