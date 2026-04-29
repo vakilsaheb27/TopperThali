@@ -37,7 +37,9 @@
                 android:layout_height="wrap_content"
                 android:text="Phone Number"
                 android:textSize="14sp"
-                android:textColor="#757575" />
+                android:textColor="#757575"
+                android:autoLink="phone"
+                android:textColorLink="@color/blue_primary" />
         </LinearLayout>
 
         <ImageView
