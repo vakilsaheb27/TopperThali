@@ -51,6 +51,9 @@ class StudentAdapter(
             )
         }
 
+        // Accessibility: Provide a comprehensive description of the student card
+        holder.itemView.contentDescription = "${student.name}, ${student.creditsRemaining} days remaining. Double tap and hold for options."
+
         // NEW: Detect long press on the whole card
         holder.itemView.setOnLongClickListener {
             onStudentLongClick(student)
