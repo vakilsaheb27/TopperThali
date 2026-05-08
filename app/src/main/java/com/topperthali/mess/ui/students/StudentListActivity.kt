@@ -2,6 +2,8 @@ package com.topperthali.mess.ui.students
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +21,7 @@ import kotlinx.coroutines.withContext
 class StudentListActivity : AppCompatActivity() {
 
     private lateinit var rvStudents: RecyclerView
+    private lateinit var llEmptyState: LinearLayout
     private var adapter: StudentAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,6 +29,7 @@ class StudentListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_student_list)
 
         rvStudents = findViewById(R.id.rvStudents)
+        llEmptyState = findViewById(R.id.llEmptyState)
         rvStudents.layoutManager = LinearLayoutManager(this)
 
         val fabAddStudent = findViewById<FloatingActionButton>(R.id.fabAddStudent)
@@ -45,13 +49,21 @@ class StudentListActivity : AppCompatActivity() {
             val studentList = db.messDao().getAllStudents()
 
             withContext(Dispatchers.Main) {
-                if (adapter == null) {
-                    adapter = StudentAdapter(studentList) { student ->
-                        showOptionsDialog(student) // Show menu instead of direct renew
-                    }
-                    rvStudents.adapter = adapter
+                if (studentList.isEmpty()) {
+                    rvStudents.visibility = View.GONE
+                    llEmptyState.visibility = View.VISIBLE
                 } else {
-                    adapter?.updateData(studentList)
+                    rvStudents.visibility = View.VISIBLE
+                    llEmptyState.visibility = View.GONE
+
+                    if (adapter == null) {
+                        adapter = StudentAdapter(studentList) { student ->
+                            showOptionsDialog(student) // Show menu instead of direct renew
+                        }
+                        rvStudents.adapter = adapter
+                    } else {
+                        adapter?.updateData(studentList)
+                    }
                 }
             }
         }
