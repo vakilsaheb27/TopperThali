@@ -35,6 +35,8 @@ class StudentAdapter(
         holder.tvPhone.text = student.mobile
         holder.tvDays.text = student.creditsRemaining.toString()
 
+        holder.itemView.contentDescription = "${student.name}, ${student.creditsRemaining} days remaining. Double tap and hold for options."
+
         if (student.creditsRemaining <= 3) {
             holder.tvDays.setTextColor(Color.RED)
         } else {
