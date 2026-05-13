@@ -41,6 +41,8 @@ class StudentAdapter(
             holder.tvDays.setTextColor(Color.parseColor("#0D47A1"))
         }
 
+        // Accessibility: Descriptive labels for screen readers
+        holder.itemView.contentDescription = "${student.name}, ${student.creditsRemaining} days remaining. Double tap and hold for options."
         holder.btnWhatsApp.contentDescription = "Send WhatsApp reminder to ${student.name}"
         holder.btnWhatsApp.setOnClickListener {
             WhatsAppHelper.sendReminder(
