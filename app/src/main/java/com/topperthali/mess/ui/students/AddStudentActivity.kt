@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.appbar.MaterialToolbar
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
 import com.topperthali.mess.data.entities.StudentEntity
@@ -24,6 +25,11 @@ class AddStudentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_student)
+
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
 
         val etStudentName = findViewById<EditText>(R.id.etName)
         val etStudentPhone = findViewById<EditText>(R.id.etMobile)
