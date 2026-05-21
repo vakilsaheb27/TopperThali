@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="16dp"
-        android:text="Take a screenshot and share!"
+        android:text="@string/take_screenshot_share"
         android:textColor="#757575" />
 
     <ImageView
@@ -34,5 +34,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Done" />
+        android:text="@string/done" />
 </LinearLayout>
