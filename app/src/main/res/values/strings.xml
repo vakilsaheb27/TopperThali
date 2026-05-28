@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Topper Thali</string>
+    <string name="back">Back</string>
+    <string name="student_directory">Student Directory</string>
+    <string name="no_students_yet">No students added yet</string>
+</resources>
