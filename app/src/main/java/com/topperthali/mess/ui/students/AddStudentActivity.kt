@@ -8,6 +8,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doAfterTextChanged
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.textfield.TextInputLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.topperthali.mess.R
@@ -25,18 +28,33 @@ class AddStudentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_student)
 
+        val topAppBar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        topAppBar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+
+        val tilName = findViewById<TextInputLayout>(R.id.tilName)
+        val tilMobile = findViewById<TextInputLayout>(R.id.tilMobile)
         val etStudentName = findViewById<EditText>(R.id.etName)
         val etStudentPhone = findViewById<EditText>(R.id.etMobile)
         val btnSaveStudent = findViewById<Button>(R.id.btnAdd)
+
+        etStudentName.doAfterTextChanged { tilName.error = null }
+        etStudentPhone.doAfterTextChanged { tilMobile.error = null }
 
         btnSaveStudent.setOnClickListener {
             val name = etStudentName.text.toString().trim()
             val phone = etStudentPhone.text.toString().trim()
 
-            if (name.isEmpty() || phone.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            var hasError = false
+            if (name.isEmpty()) {
+                tilName.error = "Name is required"
+                hasError = true
             }
+            if (phone.isEmpty()) {
+                tilMobile.error = "Mobile number is required"
+                hasError = true
+            }
+
+            if (hasError) return@setOnClickListener
 
             val qrCode = UUID.randomUUID().toString()
             val newStudent = StudentEntity(name = name, mobile = phone, qrCode = qrCode, creditsRemaining = 30)
