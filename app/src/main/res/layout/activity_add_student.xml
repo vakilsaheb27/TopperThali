@@ -3,8 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:navigationIconTint="?attr/colorOnPrimary"
+            app:navigationContentDescription="Back"
+            app:title="Add New Student"
+            app:titleTextColor="?attr/colorOnPrimary" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilName"
@@ -26,6 +47,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="Mobile Number"
+        app:counterEnabled="true"
+        app:counterMaxLength="10"
+        app:helperText="Enter 10-digit mobile number"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -44,4 +68,5 @@
         android:text="Add Student"
         app:cornerRadius="8dp" />
 
+    </LinearLayout>
 </LinearLayout>
