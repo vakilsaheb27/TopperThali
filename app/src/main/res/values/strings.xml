@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Topper Thali</string>
+    <string name="title_add_student">Add New Student</string>
+    <string name="hint_student_name">Student Name</string>
+    <string name="hint_mobile_number">Mobile Number</string>
+    <string name="btn_add_student">Add Student</string>
+    <string name="error_name_required">Name is required</string>
+    <string name="error_mobile_required">Mobile number is required</string>
+    <string name="error_invalid_mobile">Enter a valid 10-digit number</string>
+    <string name="nav_back">Back</string>
+</resources>
