@@ -2,6 +2,8 @@ package com.topperthali.mess.ui.students
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -45,6 +47,15 @@ class StudentListActivity : AppCompatActivity() {
             val studentList = db.messDao().getAllStudents()
 
             withContext(Dispatchers.Main) {
+                val llEmptyState = findViewById<LinearLayout>(R.id.llEmptyState)
+                if (studentList.isEmpty()) {
+                    rvStudents.visibility = View.GONE
+                    llEmptyState.visibility = View.VISIBLE
+                } else {
+                    rvStudents.visibility = View.VISIBLE
+                    llEmptyState.visibility = View.GONE
+                }
+
                 if (adapter == null) {
                     adapter = StudentAdapter(studentList) { student ->
                         showOptionsDialog(student) // Show menu instead of direct renew
