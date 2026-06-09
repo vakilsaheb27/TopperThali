@@ -9,7 +9,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.textfield.TextInputLayout
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
 import com.topperthali.mess.data.entities.StudentEntity
@@ -25,16 +27,26 @@ class AddStudentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_student)
 
+        val tilName = findViewById<TextInputLayout>(R.id.tilName)
+        val tilMobile = findViewById<TextInputLayout>(R.id.tilMobile)
         val etStudentName = findViewById<EditText>(R.id.etName)
         val etStudentPhone = findViewById<EditText>(R.id.etMobile)
         val btnSaveStudent = findViewById<Button>(R.id.btnAdd)
+
+        etStudentName.doAfterTextChanged { tilName.error = null }
+        etStudentPhone.doAfterTextChanged { tilMobile.error = null }
 
         btnSaveStudent.setOnClickListener {
             val name = etStudentName.text.toString().trim()
             val phone = etStudentPhone.text.toString().trim()
 
-            if (name.isEmpty() || phone.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            if (name.isEmpty()) {
+                tilName.error = "Name is required"
+                return@setOnClickListener
+            }
+
+            if (phone.length < 10) {
+                tilMobile.error = "Enter a valid 10-digit number"
                 return@setOnClickListener
             }
 
