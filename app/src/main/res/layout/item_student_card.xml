@@ -6,6 +6,9 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
     android:layout_marginVertical="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp">
 
@@ -29,7 +32,7 @@
                 android:text="Student Name"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="#212121" />
+                android:textColor="?attr/colorOnSurface" />
 
             <TextView
                 android:id="@+id/tvItemPhone"
@@ -37,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:text="Phone Number"
                 android:textSize="14sp"
-                android:textColor="#757575" />
+                android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
 
         <ImageView
@@ -65,14 +68,14 @@
                 android:text="30"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#0D47A1" />
+                android:textColor="?attr/colorPrimary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Days Left"
                 android:textSize="12sp"
-                android:textColor="#757575" />
+                android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
