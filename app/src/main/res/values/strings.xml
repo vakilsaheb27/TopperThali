@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Topper Thali</string>
+    <string name="title_student_directory">Student Directory</string>
+    <string name="title_add_student">Add Student</string>
+    <string name="action_back">Back</string>
+    <string name="empty_students_title">No students found</string>
+    <string name="empty_students_subtitle">Tap + to add your first student</string>
+    <string name="desc_whatsapp_reminder">Send WhatsApp reminder to %1$s</string>
+    <string name="desc_add_student">Add Student</string>
+</resources>
