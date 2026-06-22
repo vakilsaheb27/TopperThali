@@ -26,6 +26,16 @@
         <activity android:name=".ui.students.AddStudentActivity" />
         <activity android:name=".ui.students.StudentListActivity" />
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.topperthali.mess.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
     </application>
 
 </manifest>

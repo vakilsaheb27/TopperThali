@@ -1,5 +1,6 @@
 package com.topperthali.mess.ui.students
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Button
@@ -9,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
@@ -61,13 +63,18 @@ class AddStudentActivity : AppCompatActivity() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
         val tvName = dialogView.findViewById<TextView>(R.id.tvStudentNameDialog)
         val ivQr = dialogView.findViewById<ImageView>(R.id.ivQrCodeDialog)
+        val btnShare = dialogView.findViewById<Button>(R.id.btnShareDialog)
         val btnDone = dialogView.findViewById<Button>(R.id.btnDoneDialog)
 
         tvName.text = name
         
         if (qrBitmap != null) {
             ivQr.setImageBitmap(qrBitmap)
+            btnShare.setOnClickListener {
+                shareQrCode(name, qrBitmap)
+            }
         } else {
+            btnShare.isEnabled = false
             Toast.makeText(this, "Failed to generate QR Code", Toast.LENGTH_SHORT).show()
         }
 
@@ -81,5 +88,32 @@ class AddStudentActivity : AppCompatActivity() {
             finish() // Go back to dashboard
         }
         dialog.show()
+    }
+
+    private fun shareQrCode(name: String, bitmap: Bitmap) {
+        try {
+            val cachePath = java.io.File(cacheDir, "shared_images")
+            cachePath.mkdirs()
+            val file = java.io.File(cachePath, "QR_${name.replace(" ", "_")}.png")
+            val stream = java.io.FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            stream.close()
+
+            val contentUri = FileProvider.getUriForFile(this, "com.topperthali.mess.fileprovider", file)
+
+            if (contentUri != null) {
+                val shareIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    setDataAndType(contentUri, contentResolver.getType(contentUri))
+                    putExtra(Intent.EXTRA_STREAM, contentUri)
+                    putExtra(Intent.EXTRA_TEXT, "QR Code for $name - Topper Thali Mess")
+                }
+                startActivity(Intent.createChooser(shareIntent, "Share QR Code via"))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error sharing QR Code", Toast.LENGTH_SHORT).show()
+        }
     }
 }
