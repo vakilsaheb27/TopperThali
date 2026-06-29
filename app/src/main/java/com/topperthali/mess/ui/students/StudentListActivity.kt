@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
@@ -25,8 +27,25 @@ class StudentListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_student_list)
 
+        val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        toolbar.setNavigationOnClickListener {
+            finish()
+        }
+
         rvStudents = findViewById(R.id.rvStudents)
         rvStudents.layoutManager = LinearLayoutManager(this)
+
+        val searchView = findViewById<SearchView>(R.id.searchView)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter?.filter(newText ?: "")
+                return true
+            }
+        })
 
         val fabAddStudent = findViewById<FloatingActionButton>(R.id.fabAddStudent)
         fabAddStudent.setOnClickListener {
@@ -47,11 +66,17 @@ class StudentListActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 if (adapter == null) {
                     adapter = StudentAdapter(studentList) { student ->
-                        showOptionsDialog(student) // Show menu instead of direct renew
+                        showOptionsDialog(student)
                     }
                     rvStudents.adapter = adapter
                 } else {
                     adapter?.updateData(studentList)
+                    // Re-apply filter if there is active search text
+                    val searchView = findViewById<SearchView>(R.id.searchView)
+                    val currentQuery = searchView.query.toString()
+                    if (currentQuery.isNotEmpty()) {
+                        adapter?.filter(currentQuery)
+                    }
                 }
             }
         }
