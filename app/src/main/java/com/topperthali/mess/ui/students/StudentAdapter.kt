@@ -10,11 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.topperthali.mess.R
 import com.topperthali.mess.data.entities.StudentEntity
 import com.topperthali.mess.utils.WhatsAppHelper
+import java.util.Locale
 
 class StudentAdapter(
     private var studentList: List<StudentEntity>,
-    private val onStudentLongClick: (StudentEntity) -> Unit // NEW: Callback for long press
+    private val onStudentLongClick: (StudentEntity) -> Unit
 ) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
+
+    private var fullList: List<StudentEntity> = studentList
 
     class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tvItemName)
@@ -51,10 +54,9 @@ class StudentAdapter(
             )
         }
 
-        // NEW: Detect long press on the whole card
         holder.itemView.setOnLongClickListener {
             onStudentLongClick(student)
-            true // Return true to indicate we consumed the long click
+            true
         }
     }
 
@@ -63,7 +65,21 @@ class StudentAdapter(
     }
 
     fun updateData(newList: List<StudentEntity>) {
+        this.fullList = newList
         this.studentList = newList
+        notifyDataSetChanged()
+    }
+
+    fun filter(query: String) {
+        val lowerCaseQuery = query.lowercase(Locale.getDefault())
+        studentList = if (lowerCaseQuery.isEmpty()) {
+            fullList
+        } else {
+            fullList.filter {
+                it.name.lowercase(Locale.getDefault()).contains(lowerCaseQuery) ||
+                it.mobile.contains(lowerCaseQuery)
+            }
+        }
         notifyDataSetChanged()
     }
 }
