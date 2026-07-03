@@ -32,6 +32,9 @@ class StudentListActivity : AppCompatActivity() {
         fabAddStudent.setOnClickListener {
             startActivity(Intent(this, AddStudentActivity::class.java))
         }
+
+        findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.topAppBar)
+            .setNavigationOnClickListener { finish() }
     }
 
     override fun onResume() {
