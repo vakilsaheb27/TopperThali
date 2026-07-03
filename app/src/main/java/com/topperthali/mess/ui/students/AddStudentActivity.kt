@@ -29,6 +29,9 @@ class AddStudentActivity : AppCompatActivity() {
         val etStudentPhone = findViewById<EditText>(R.id.etMobile)
         val btnSaveStudent = findViewById<Button>(R.id.btnAdd)
 
+        findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.topAppBar)
+            .setNavigationOnClickListener { finish() }
+
         btnSaveStudent.setOnClickListener {
             val name = etStudentName.text.toString().trim()
             val phone = etStudentPhone.text.toString().trim()
