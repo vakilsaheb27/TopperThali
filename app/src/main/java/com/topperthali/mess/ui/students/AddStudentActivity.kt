@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.appbar.MaterialToolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.topperthali.mess.R
@@ -25,6 +26,11 @@ class AddStudentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_student)
 
+        val topAppBar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        topAppBar.setNavigationOnClickListener {
+            finish()
+        }
+
         val etStudentName = findViewById<EditText>(R.id.etName)
         val etStudentPhone = findViewById<EditText>(R.id.etMobile)
         val btnSaveStudent = findViewById<Button>(R.id.btnAdd)
@@ -37,6 +43,10 @@ class AddStudentActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+            // Disable button and show loading state
+            btnSaveStudent.isEnabled = false
+            btnSaveStudent.text = "Adding Student..."
 
             val qrCode = UUID.randomUUID().toString()
             val newStudent = StudentEntity(name = name, mobile = phone, qrCode = qrCode, creditsRemaining = 30)
@@ -51,6 +61,8 @@ class AddStudentActivity : AppCompatActivity() {
 
                 // Switch back to Main thread to update the UI
                 withContext(Dispatchers.Main) {
+                    btnSaveStudent.isEnabled = true
+                    btnSaveStudent.text = "Add Student"
                     showQrDialog(name, qrBitmap)
                 }
             }
