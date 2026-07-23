@@ -3,13 +3,15 @@ package com.topperthali.mess.ui.students
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.textfield.TextInputEditText
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
 import com.topperthali.mess.data.entities.StudentEntity
@@ -25,16 +27,39 @@ class AddStudentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_student)
 
-        val etStudentName = findViewById<EditText>(R.id.etName)
-        val etStudentPhone = findViewById<EditText>(R.id.etMobile)
+        val tilName = findViewById<TextInputLayout>(R.id.tilName)
+        val etStudentName = findViewById<TextInputEditText>(R.id.etName)
+        val tilMobile = findViewById<TextInputLayout>(R.id.tilMobile)
+        val etStudentPhone = findViewById<TextInputEditText>(R.id.etMobile)
         val btnSaveStudent = findViewById<Button>(R.id.btnAdd)
+
+        etStudentName.doOnTextChanged { text, _, _, _ ->
+            if (!text.isNullOrBlank()) {
+                tilName.error = null
+            }
+        }
+
+        etStudentPhone.doOnTextChanged { text, _, _, _ ->
+            if (!text.isNullOrBlank()) {
+                tilMobile.error = null
+            }
+        }
 
         btnSaveStudent.setOnClickListener {
             val name = etStudentName.text.toString().trim()
             val phone = etStudentPhone.text.toString().trim()
 
-            if (name.isEmpty() || phone.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            var hasError = false
+            if (name.isEmpty()) {
+                tilName.error = "Name cannot be empty"
+                hasError = true
+            }
+            if (phone.isEmpty()) {
+                tilMobile.error = "Mobile number cannot be empty"
+                hasError = true
+            }
+
+            if (hasError) {
                 return@setOnClickListener
             }
 
