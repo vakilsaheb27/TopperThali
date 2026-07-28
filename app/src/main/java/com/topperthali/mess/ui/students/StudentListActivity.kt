@@ -25,6 +25,11 @@ class StudentListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_student_list)
 
+        val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.topAppBar)
+        toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         rvStudents = findViewById(R.id.rvStudents)
         rvStudents.layoutManager = LinearLayoutManager(this)
 
@@ -58,16 +63,47 @@ class StudentListActivity : AppCompatActivity() {
     }
 
     private fun showOptionsDialog(student: StudentEntity) {
-        val options = arrayOf("🔄 Renew Subscription (+30 Days)", "❌ Delete Student")
+        val options = arrayOf("🔄 Renew Subscription (+30 Days)", "📷 View QR Code", "❌ Delete Student")
         AlertDialog.Builder(this)
             .setTitle("${student.name} Options")
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> confirmRenew(student)
-                    1 -> confirmDelete(student)
+                    1 -> showQrCode(student)
+                    2 -> confirmDelete(student)
                 }
             }
             .show()
+    }
+
+    private fun showQrCode(student: StudentEntity) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
+        val tvName = dialogView.findViewById<android.widget.TextView>(R.id.tvStudentNameDialog)
+        val ivQr = dialogView.findViewById<android.widget.ImageView>(R.id.ivQrCodeDialog)
+        val btnDone = dialogView.findViewById<android.widget.Button>(R.id.btnDoneDialog)
+
+        tvName.text = student.name
+
+        try {
+            val qrBitmap = com.topperthali.mess.utils.QrGenerator.generateQrCode(student.qrCode)
+            if (qrBitmap != null) {
+                ivQr.setImageBitmap(qrBitmap)
+            } else {
+                Toast.makeText(this, "Failed to generate QR Code", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error generating QR Code: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        btnDone.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     private fun confirmRenew(student: StudentEntity) {
