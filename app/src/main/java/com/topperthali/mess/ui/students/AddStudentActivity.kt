@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.core.widget.doOnTextChanged
+import com.google.android.material.textfield.TextInputLayout
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
 import com.topperthali.mess.data.entities.StudentEntity
@@ -25,18 +27,41 @@ class AddStudentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_student)
 
+        val tilName = findViewById<TextInputLayout>(R.id.tilName)
+        val tilMobile = findViewById<TextInputLayout>(R.id.tilMobile)
         val etStudentName = findViewById<EditText>(R.id.etName)
         val etStudentPhone = findViewById<EditText>(R.id.etMobile)
         val btnSaveStudent = findViewById<Button>(R.id.btnAdd)
+
+        etStudentName.doOnTextChanged { _, _, _, _ -> tilName.error = null }
+        etStudentPhone.doOnTextChanged { _, _, _, _ -> tilMobile.error = null }
 
         btnSaveStudent.setOnClickListener {
             val name = etStudentName.text.toString().trim()
             val phone = etStudentPhone.text.toString().trim()
 
-            if (name.isEmpty() || phone.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            var isValid = true
+            if (name.isEmpty()) {
+                tilName.error = "Student name is required"
+                isValid = false
+            } else {
+                tilName.error = null
             }
+
+            if (phone.isEmpty()) {
+                tilMobile.error = "Mobile number is required"
+                isValid = false
+            } else if (phone.length != 10 || !phone.all { it.isDigit() }) {
+                tilMobile.error = "Must be a valid 10-digit number"
+                isValid = false
+            } else {
+                tilMobile.error = null
+            }
+
+            if (!isValid) return@setOnClickListener
+
+            btnSaveStudent.isEnabled = false
+            btnSaveStudent.text = "Saving..."
 
             val qrCode = UUID.randomUUID().toString()
             val newStudent = StudentEntity(name = name, mobile = phone, qrCode = qrCode, creditsRemaining = 30)
@@ -51,6 +76,8 @@ class AddStudentActivity : AppCompatActivity() {
 
                 // Switch back to Main thread to update the UI
                 withContext(Dispatchers.Main) {
+                    btnSaveStudent.text = "Add Student"
+                    btnSaveStudent.isEnabled = true
                     showQrDialog(name, qrBitmap)
                 }
             }
