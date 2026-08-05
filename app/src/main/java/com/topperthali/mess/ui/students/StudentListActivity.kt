@@ -9,23 +9,38 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
 import com.topperthali.mess.data.entities.StudentEntity
+import com.topperthali.mess.utils.QrGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+import android.view.View
+import android.widget.LinearLayout
+import com.google.android.material.appbar.MaterialToolbar
+
 class StudentListActivity : AppCompatActivity() {
 
     private lateinit var rvStudents: RecyclerView
+    private lateinit var layoutEmpty: LinearLayout
     private var adapter: StudentAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_student_list)
 
+        val topAppBar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        topAppBar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         rvStudents = findViewById(R.id.rvStudents)
+        layoutEmpty = findViewById(R.id.layoutEmpty)
         rvStudents.layoutManager = LinearLayoutManager(this)
 
         val fabAddStudent = findViewById<FloatingActionButton>(R.id.fabAddStudent)
@@ -45,6 +60,14 @@ class StudentListActivity : AppCompatActivity() {
             val studentList = db.messDao().getAllStudents()
 
             withContext(Dispatchers.Main) {
+                if (studentList.isEmpty()) {
+                    layoutEmpty.visibility = View.VISIBLE
+                    rvStudents.visibility = View.GONE
+                } else {
+                    layoutEmpty.visibility = View.GONE
+                    rvStudents.visibility = View.VISIBLE
+                }
+
                 if (adapter == null) {
                     adapter = StudentAdapter(studentList) { student ->
                         showOptionsDialog(student) // Show menu instead of direct renew
@@ -58,16 +81,48 @@ class StudentListActivity : AppCompatActivity() {
     }
 
     private fun showOptionsDialog(student: StudentEntity) {
-        val options = arrayOf("🔄 Renew Subscription (+30 Days)", "❌ Delete Student")
+        val options = arrayOf("🔄 Renew Subscription (+30 Days)", "🔍 View QR Code", "❌ Delete Student")
         AlertDialog.Builder(this)
             .setTitle("${student.name} Options")
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> confirmRenew(student)
-                    1 -> confirmDelete(student)
+                    1 -> showQrDialog(student)
+                    2 -> confirmDelete(student)
                 }
             }
             .show()
+    }
+
+    private fun showQrDialog(student: StudentEntity) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
+        val tvName = dialogView.findViewById<TextView>(R.id.tvStudentNameDialog)
+        val ivQr = dialogView.findViewById<ImageView>(R.id.ivQrCodeDialog)
+        val btnDone = dialogView.findViewById<Button>(R.id.btnDoneDialog)
+
+        tvName.text = student.name
+        ivQr.contentDescription = "QR Code for ${student.name}"
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val qrBitmap = QrGenerator.generateQrCode(student.qrCode)
+            withContext(Dispatchers.Main) {
+                if (qrBitmap != null) {
+                    ivQr.setImageBitmap(qrBitmap)
+                } else {
+                    Toast.makeText(this@StudentListActivity, "Failed to generate QR Code", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        btnDone.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     private fun confirmRenew(student: StudentEntity) {
