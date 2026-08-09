@@ -16,6 +16,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
+import com.topperthali.mess.utils.QrGenerator
+
 class StudentListActivity : AppCompatActivity() {
 
     private lateinit var rvStudents: RecyclerView
@@ -58,16 +63,44 @@ class StudentListActivity : AppCompatActivity() {
     }
 
     private fun showOptionsDialog(student: StudentEntity) {
-        val options = arrayOf("🔄 Renew Subscription (+30 Days)", "❌ Delete Student")
+        val options = arrayOf("🔍 View QR Code", "🔄 Renew Subscription (+30 Days)", "❌ Delete Student")
         AlertDialog.Builder(this)
             .setTitle("${student.name} Options")
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> confirmRenew(student)
-                    1 -> confirmDelete(student)
+                    0 -> showQrDialog(student)
+                    1 -> confirmRenew(student)
+                    2 -> confirmDelete(student)
                 }
             }
             .show()
+    }
+
+    private fun showQrDialog(student: StudentEntity) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
+        val tvName = dialogView.findViewById<TextView>(R.id.tvStudentNameDialog)
+        val ivQr = dialogView.findViewById<ImageView>(R.id.ivQrCodeDialog)
+        val btnDone = dialogView.findViewById<Button>(R.id.btnDoneDialog)
+
+        tvName.text = student.name
+
+        // Dynamically generate QR code
+        val qrBitmap = QrGenerator.generateQrCode(student.qrCode)
+        if (qrBitmap != null) {
+            ivQr.setImageBitmap(qrBitmap)
+            ivQr.contentDescription = "QR Code for ${student.name}"
+        } else {
+            Toast.makeText(this, "Failed to generate QR Code", Toast.LENGTH_SHORT).show()
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        btnDone.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     private fun confirmRenew(student: StudentEntity) {
