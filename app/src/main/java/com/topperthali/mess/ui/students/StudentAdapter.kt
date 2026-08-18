@@ -13,7 +13,7 @@ import com.topperthali.mess.utils.WhatsAppHelper
 
 class StudentAdapter(
     private var studentList: List<StudentEntity>,
-    private val onStudentLongClick: (StudentEntity) -> Unit // NEW: Callback for long press
+    private val onStudentClick: (StudentEntity) -> Unit
 ) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
 
     class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -41,6 +41,9 @@ class StudentAdapter(
             holder.tvDays.setTextColor(Color.parseColor("#0D47A1"))
         }
 
+        val statusText = if (student.creditsRemaining <= 0) "Subscription Expired" else "${student.creditsRemaining} days left"
+        holder.itemView.contentDescription = "${student.name}, ${student.mobile}, $statusText. Tap for options."
+
         holder.btnWhatsApp.contentDescription = "Send WhatsApp reminder to ${student.name}"
         holder.btnWhatsApp.setOnClickListener {
             WhatsAppHelper.sendReminder(
@@ -51,10 +54,13 @@ class StudentAdapter(
             )
         }
 
-        // NEW: Detect long press on the whole card
+        holder.itemView.setOnClickListener {
+            onStudentClick(student)
+        }
+
         holder.itemView.setOnLongClickListener {
-            onStudentLongClick(student)
-            true // Return true to indicate we consumed the long click
+            onStudentClick(student)
+            true
         }
     }
 
