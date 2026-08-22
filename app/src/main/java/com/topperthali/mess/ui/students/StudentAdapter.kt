@@ -41,6 +41,7 @@ class StudentAdapter(
             holder.tvDays.setTextColor(Color.parseColor("#0D47A1"))
         }
 
+        holder.tvDays.contentDescription = "${student.name} has ${student.creditsRemaining} days remaining"
         holder.btnWhatsApp.contentDescription = "Send WhatsApp reminder to ${student.name}"
         holder.btnWhatsApp.setOnClickListener {
             WhatsAppHelper.sendReminder(
