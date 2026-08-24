@@ -64,7 +64,8 @@ class AddStudentActivity : AppCompatActivity() {
         val btnDone = dialogView.findViewById<Button>(R.id.btnDoneDialog)
 
         tvName.text = name
-        
+        ivQr.contentDescription = "QR Code for $name"
+
         if (qrBitmap != null) {
             ivQr.setImageBitmap(qrBitmap)
         } else {
