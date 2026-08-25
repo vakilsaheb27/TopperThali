@@ -2,16 +2,21 @@ package com.topperthali.mess.ui.students
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
 import com.topperthali.mess.data.entities.StudentEntity
+import com.topperthali.mess.utils.QrGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,6 +29,9 @@ class StudentListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_student_list)
+
+        val topAppBar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        topAppBar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         rvStudents = findViewById(R.id.rvStudents)
         rvStudents.layoutManager = LinearLayoutManager(this)
@@ -58,16 +66,45 @@ class StudentListActivity : AppCompatActivity() {
     }
 
     private fun showOptionsDialog(student: StudentEntity) {
-        val options = arrayOf("🔄 Renew Subscription (+30 Days)", "❌ Delete Student")
+        val options = arrayOf("📱 View QR Code", "🔄 Renew Subscription (+30 Days)", "❌ Delete Student")
         AlertDialog.Builder(this)
             .setTitle("${student.name} Options")
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> confirmRenew(student)
-                    1 -> confirmDelete(student)
+                    0 -> showQrDialog(student)
+                    1 -> confirmRenew(student)
+                    2 -> confirmDelete(student)
                 }
             }
             .show()
+    }
+
+    private fun showQrDialog(student: StudentEntity) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
+        val tvName = dialogView.findViewById<TextView>(R.id.tvStudentNameDialog)
+        val ivQr = dialogView.findViewById<ImageView>(R.id.ivQrCodeDialog)
+        val btnDone = dialogView.findViewById<Button>(R.id.btnDoneDialog)
+
+        tvName.text = student.name
+        ivQr.contentDescription = "QR Code for ${student.name}"
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val qrBitmap = QrGenerator.generateQrCode(student.qrCode)
+            withContext(Dispatchers.Main) {
+                if (qrBitmap != null) {
+                    ivQr.setImageBitmap(qrBitmap)
+                } else {
+                    Toast.makeText(this@StudentListActivity, "Failed to generate QR Code", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        btnDone.setOnClickListener { dialog.dismiss() }
+        dialog.show()
     }
 
     private fun confirmRenew(student: StudentEntity) {
