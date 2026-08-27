@@ -31,6 +31,8 @@ class StudentAdapter(
 
     override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
         val student = studentList[position]
+        holder.itemView.contentDescription = "${student.name}, Mobile: ${student.mobile}, ${student.creditsRemaining} days remaining"
+
         holder.tvName.text = student.name
         holder.tvPhone.text = student.mobile
         holder.tvDays.text = student.creditsRemaining.toString()
