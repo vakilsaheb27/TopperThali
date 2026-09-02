@@ -35,11 +35,24 @@ class StudentAdapter(
         holder.tvPhone.text = student.mobile
         holder.tvDays.text = student.creditsRemaining.toString()
 
-        if (student.creditsRemaining <= 3) {
-            holder.tvDays.setTextColor(Color.RED)
-        } else {
-            holder.tvDays.setTextColor(Color.parseColor("#0D47A1"))
+        when {
+            student.creditsRemaining <= 0 -> {
+                holder.tvDays.setTextColor(Color.parseColor("#B00020"))
+            }
+            student.creditsRemaining <= 3 -> {
+                holder.tvDays.setTextColor(Color.parseColor("#E65100"))
+            }
+            else -> {
+                holder.tvDays.setTextColor(Color.parseColor("#0D47A1"))
+            }
         }
+
+        val statusText = when {
+            student.creditsRemaining <= 0 -> "Subscription expired"
+            student.creditsRemaining <= 3 -> "Low balance, ${student.creditsRemaining} days left"
+            else -> "${student.creditsRemaining} days left"
+        }
+        holder.itemView.contentDescription = "${student.name}, phone ${student.mobile}, $statusText"
 
         holder.btnWhatsApp.contentDescription = "Send WhatsApp reminder to ${student.name}"
         holder.btnWhatsApp.setOnClickListener {
@@ -51,7 +64,7 @@ class StudentAdapter(
             )
         }
 
-        // NEW: Detect long press on the whole card
+        // Detect long press on the whole card
         holder.itemView.setOnLongClickListener {
             onStudentLongClick(student)
             true // Return true to indicate we consumed the long click
