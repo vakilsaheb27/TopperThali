@@ -2,6 +2,7 @@ package com.topperthali.mess.ui.students
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import kotlinx.coroutines.withContext
 class StudentListActivity : AppCompatActivity() {
 
     private lateinit var rvStudents: RecyclerView
+    private lateinit var layoutEmptyState: View
     private var adapter: StudentAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +29,7 @@ class StudentListActivity : AppCompatActivity() {
 
         rvStudents = findViewById(R.id.rvStudents)
         rvStudents.layoutManager = LinearLayoutManager(this)
+        layoutEmptyState = findViewById(R.id.layoutEmptyState)
 
         val fabAddStudent = findViewById<FloatingActionButton>(R.id.fabAddStudent)
         fabAddStudent.setOnClickListener {
@@ -45,6 +48,7 @@ class StudentListActivity : AppCompatActivity() {
             val studentList = db.messDao().getAllStudents()
 
             withContext(Dispatchers.Main) {
+                layoutEmptyState.visibility = if (studentList.isEmpty()) View.VISIBLE else View.GONE
                 if (adapter == null) {
                     adapter = StudentAdapter(studentList) { student ->
                         showOptionsDialog(student) // Show menu instead of direct renew
