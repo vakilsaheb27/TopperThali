@@ -1,6 +1,6 @@
 package com.topperthali.mess.ui.students
 
-import android.graphics.Color
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,10 +35,19 @@ class StudentAdapter(
         holder.tvPhone.text = student.mobile
         holder.tvDays.text = student.creditsRemaining.toString()
 
-        if (student.creditsRemaining <= 3) {
-            holder.tvDays.setTextColor(Color.RED)
+        val context = holder.itemView.context
+        val attrToResolve = if (student.creditsRemaining <= 3) {
+            com.google.android.material.R.attr.colorError
         } else {
-            holder.tvDays.setTextColor(Color.parseColor("#0D47A1"))
+            com.google.android.material.R.attr.colorPrimary
+        }
+        val typedValue = TypedValue()
+        context.theme.resolveAttribute(attrToResolve, typedValue, true)
+        holder.tvDays.setTextColor(typedValue.data)
+
+        holder.itemView.contentDescription = "${student.name}, Mobile: ${student.mobile}, ${student.creditsRemaining} days remaining. Tap for options."
+        holder.itemView.setOnClickListener {
+            onStudentLongClick(student)
         }
 
         holder.btnWhatsApp.contentDescription = "Send WhatsApp reminder to ${student.name}"
