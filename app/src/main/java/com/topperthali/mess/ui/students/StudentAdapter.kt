@@ -13,7 +13,7 @@ import com.topperthali.mess.utils.WhatsAppHelper
 
 class StudentAdapter(
     private var studentList: List<StudentEntity>,
-    private val onStudentLongClick: (StudentEntity) -> Unit // NEW: Callback for long press
+    private val onStudentClick: (StudentEntity) -> Unit
 ) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
 
     class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -51,10 +51,9 @@ class StudentAdapter(
             )
         }
 
-        // NEW: Detect long press on the whole card
-        holder.itemView.setOnLongClickListener {
-            onStudentLongClick(student)
-            true // Return true to indicate we consumed the long click
+        holder.itemView.contentDescription = "${student.name}, ${student.creditsRemaining} days left. Tap for options."
+        holder.itemView.setOnClickListener {
+            onStudentClick(student)
         }
     }
 
