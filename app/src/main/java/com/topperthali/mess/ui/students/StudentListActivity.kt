@@ -47,7 +47,7 @@ class StudentListActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 if (adapter == null) {
                     adapter = StudentAdapter(studentList) { student ->
-                        showOptionsDialog(student) // Show menu instead of direct renew
+                        showOptionsDialog(student)
                     }
                     rvStudents.adapter = adapter
                 } else {
