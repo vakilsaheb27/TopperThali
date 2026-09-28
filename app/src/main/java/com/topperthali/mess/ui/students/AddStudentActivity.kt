@@ -65,6 +65,8 @@ class AddStudentActivity : AppCompatActivity() {
 
         tvName.text = name
         
+        ivQr.contentDescription = "QR Code for $name"
+
         if (qrBitmap != null) {
             ivQr.setImageBitmap(qrBitmap)
         } else {
