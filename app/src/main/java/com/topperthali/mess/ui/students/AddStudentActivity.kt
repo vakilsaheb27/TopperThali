@@ -67,6 +67,7 @@ class AddStudentActivity : AppCompatActivity() {
         
         if (qrBitmap != null) {
             ivQr.setImageBitmap(qrBitmap)
+            ivQr.contentDescription = "QR Code for $name"
         } else {
             Toast.makeText(this, "Failed to generate QR Code", Toast.LENGTH_SHORT).show()
         }
