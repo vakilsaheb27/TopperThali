@@ -2,12 +2,15 @@ package com.topperthali.mess.ui.students
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
@@ -19,14 +22,19 @@ import kotlinx.coroutines.withContext
 class StudentListActivity : AppCompatActivity() {
 
     private lateinit var rvStudents: RecyclerView
+    private lateinit var layoutEmptyState: LinearLayout
     private var adapter: StudentAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_student_list)
 
+        val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+
         rvStudents = findViewById(R.id.rvStudents)
         rvStudents.layoutManager = LinearLayoutManager(this)
+        layoutEmptyState = findViewById(R.id.layoutEmptyState)
 
         val fabAddStudent = findViewById<FloatingActionButton>(R.id.fabAddStudent)
         fabAddStudent.setOnClickListener {
@@ -45,6 +53,14 @@ class StudentListActivity : AppCompatActivity() {
             val studentList = db.messDao().getAllStudents()
 
             withContext(Dispatchers.Main) {
+                if (studentList.isEmpty()) {
+                    layoutEmptyState.visibility = View.VISIBLE
+                    rvStudents.visibility = View.GONE
+                } else {
+                    layoutEmptyState.visibility = View.GONE
+                    rvStudents.visibility = View.VISIBLE
+                }
+
                 if (adapter == null) {
                     adapter = StudentAdapter(studentList) { student ->
                         showOptionsDialog(student) // Show menu instead of direct renew
