@@ -2,6 +2,9 @@ package com.topperthali.mess.ui.students
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +15,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.topperthali.mess.R
 import com.topperthali.mess.data.MessDatabase
 import com.topperthali.mess.data.entities.StudentEntity
+import com.topperthali.mess.utils.QrGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,16 +62,35 @@ class StudentListActivity : AppCompatActivity() {
     }
 
     private fun showOptionsDialog(student: StudentEntity) {
-        val options = arrayOf("🔄 Renew Subscription (+30 Days)", "❌ Delete Student")
+        val options = arrayOf("📱 View QR Code", "🔄 Renew Subscription (+30 Days)", "❌ Delete Student")
         AlertDialog.Builder(this)
             .setTitle("${student.name} Options")
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> confirmRenew(student)
-                    1 -> confirmDelete(student)
+                    0 -> showQrDialog(student)
+                    1 -> confirmRenew(student)
+                    2 -> confirmDelete(student)
                 }
             }
             .show()
+    }
+
+    private fun showQrDialog(student: StudentEntity) {
+        val qrBitmap = QrGenerator.generateQrCode(student.qrCode)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
+        dialogView.findViewById<TextView>(R.id.tvStudentNameDialog).text = student.name
+        val ivQr = dialogView.findViewById<ImageView>(R.id.ivQrCodeDialog)
+        ivQr.contentDescription = "QR Code for ${student.name}"
+        if (qrBitmap != null) {
+            ivQr.setImageBitmap(qrBitmap)
+        }
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+        dialogView.findViewById<Button>(R.id.btnDoneDialog).setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     private fun confirmRenew(student: StudentEntity) {
