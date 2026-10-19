@@ -25,6 +25,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var tvLunchCount: TextView
     private lateinit var tvDinnerCount: TextView
+    private lateinit var cardLunchStats: MaterialCardView
+    private lateinit var cardDinnerStats: MaterialCardView
 
     private val barcodeLauncher = registerForActivityResult(ScanContract()) { result: ScanIntentResult ->
         if (result.contents == null) {
@@ -40,6 +42,8 @@ class MainActivity : AppCompatActivity() {
 
         tvLunchCount = findViewById(R.id.tvLunchCount)
         tvDinnerCount = findViewById(R.id.tvDinnerCount)
+        cardLunchStats = findViewById(R.id.cardLunchStats)
+        cardDinnerStats = findViewById(R.id.cardDinnerStats)
 
         val cardScanQr = findViewById<MaterialCardView>(R.id.cardScanQr)
         val cardManageStudents = findViewById<MaterialCardView>(R.id.cardManageStudents)
@@ -75,6 +79,8 @@ class MainActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 tvLunchCount.text = lunchCount.toString()
                 tvDinnerCount.text = dinnerCount.toString()
+                cardLunchStats.contentDescription = "Lunch attendance: $lunchCount students"
+                cardDinnerStats.contentDescription = "Dinner attendance: $dinnerCount students"
             }
         }
     }
